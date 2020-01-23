@@ -1,0 +1,116 @@
+$date = Get-Date -Format yyyyMMdd
+$logFile = "$env:TEMP\LMPoSHToolLog$date.txt"
+$SSID = [System.DirectoryServices.AccountManagement.UserPrincipal]::Current
+$SID = "S-1-5-21-397252144-2314352834-1651650520-23312198"
+$HKUPath =  Microsoft.PowerShell.Core\Registry::HKEY_USERS\$SID\Software\Sysinternals\PsExec
+function Menu {
+    param (
+        [string]$Title = 'Lateral Movement Activities'
+    )
+    Clear-Host
+    Write-Host "================ $Title ================`n"
+    
+    Write-Host "A: Press 'A' to search for Command Execution."
+    Write-Host "B: Press 'B' to search for Obtaining password hashes ."
+    Write-Host "C: Press 'C' to search for Packet tunneling."
+    Write-Host "D: Press 'D' to search for Remote logins."
+    Write-Host "E: Press 'E' to search for Pass-the-hash/Pass-the-Ticket."
+    Write-Host "F: Press 'F' to search for Escalation to SYSTEM privilege."
+    Write-Host "G: Press 'G' to search for Privilege escalation."
+    Write-Host "H: Press 'H' to search for Capturing domain administrator rights account."
+    Write-Host "I: Press 'I' to search for Capturing Active Directory database."
+    Write-Host "J: Press 'J' to search for Adding or deleting a user group."
+    Write-Host "K: Press 'K' to search for File sharing."
+    Write-Host "L: Press 'L' to search for Deleting evidence."
+    Write-Host "M: Press 'M' to search for Obtaining account information."
+    Write-Host "Q: Press 'Q' to quit.`n"
+}
+
+
+
+#####Main script Body#####
+do
+ {
+ Start-Transcript -Path $logFile -Append -IncludeInvocationHeader
+ $IP = $(Get-NetIPAddress -AddressFamily IPv4 | where { $_.InterfaceAlias -notmatch 'Loopback' }).IPAddress
+    Menu
+    $selection = Read-Host "Select an option"
+    "`n"
+    switch ($selection)
+    {
+
+    'A' {
+    "`n================ Command Execution ================`n"
+
+    #A.1 PsExec 
+        $PsExecSourceProcessExit = Get-EventLog -LogName Security -InstanceId 4689 | where {$_.ProcessName -eq "*PsExec*"} | where {$_.ExitStatus -eq "0x0"}  #A.1.B PsExec source host PsExec exit code security event log
+        $PsExecSourceRegistryHistory = Get-ItemProperty  #A.1.C PsExec source host Registry execution history
+        $PsExecDestination = 
+        if ( $PsExecExecutionHistory -or $B -or $C ) { Write-Output "PsExec was executed on $env:COMPUTERNAME $IP going to (PlaceHolder)."} #Check for Instance A or B or C.
+            
+        else { Write-output "PsExec has not been used on $env:COMPUTERNAME $IP." }
+        #Sysmon Source Host Event Logs
+        #PsExec Source Host Execution History
+    #A.2 wmic
+    #A.3 PowerShell
+    #A.4 wmiexec.vbs
+    #A.5 BeginX
+    #A.6 winrm
+    #A.7 at
+    #A.8 winrs
+    #A.9 BITS
+        }
+
+    'B' {
+    "`n================ Obtaining password hash ================`n"
+        }
+
+    'C' {
+    "`n================ Packet tunneling ================`n"
+        }
+
+    'D' {
+    "`n================ Remote login ================`n"
+        }
+
+    'E' {
+    "`n================ Pass-the-hash/Pass-the-Ticket ================`n"
+        }
+
+    'F' {
+    "`n================ Escalation to SYSTEM privilege ================`n"
+        }
+
+    'G' {
+    "`n================ Privilege escalation ================`n"
+        }
+
+    'H' {
+    "`n================ Capturing domain administrator rights account ================`n"
+        }
+
+    'I' {
+    "`n================ Capturing Active Directory database ================`n"
+        }
+
+    'J' {
+    "`n================ Adding or deleting a user group ================`n"
+        }
+
+    'K' {
+    "`n================ File sharing ================`n"
+        }
+
+    'L' {
+    "`n================ Deleting evidence ================`n"
+        }
+
+    'M' {
+    "`n================ Obtaining account information ================`n"
+        }
+    } #Menu
+    pause
+ }
+ until ($selection -eq 'q')
+Stop-Transcript
+ ######End of Script#####
